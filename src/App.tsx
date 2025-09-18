@@ -8,60 +8,45 @@ function App() {
   const [inputUp, setInputUp] = useState("");
   const [inputDown, setInputDown] = useState("");
 
-  // --- Evaluador seguro con Function ---
-  function safeEvaluate(expr: string): number {
-    // Solo permitir números, + - * / y puntos
-    if (!/^[0-9+\-*/. ]+$/.test(expr)) throw new Error("Expresión inválida");
-    // eslint-disable-next-line no-new-func
-    return new Function(`return ${expr}`)();
-  }
-
   function insertarValor(valor: string) {
-    if (valor === "C") {
-      setInputUp("");
-      setInputDown("");
-      return;
-    }
+  const operadores = "+-*/";
 
-    if (valor === "CE") {
-      setInputDown("");
-      return;
-    }
-
-    if (valor === "=") {
-      try {
-        const resultado = safeEvaluate(inputDown);
-        setInputUp(inputDown + " =");
-        setInputDown(resultado.toString());
-      } catch {
-        setInputDown("Error");
-      }
-      return;
-    }
-
-    if (valor === "+/-") {
-      if (inputDown) {
-        // Cambiar signo del número actual
-        let num = parseFloat(inputDown);
-        if (!isNaN(num)) {
-          setInputDown((-num).toString());
-        }
-      }
-      return;
-    }
-
-    // Evitar operadores duplicados
-    const operadores = "+-*/";
-    if (
-      operadores.includes(valor) &&
-      inputDown &&
-      operadores.includes(inputDown[inputDown.length - 1])
-    ) {
-      return; // ignora si último es operador
-    }
-
-    setInputDown(prev => prev + valor);
+  if (valor === "C") {
+    setInputUp("");
+    setInputDown("");
+    return;
   }
+
+  if (valor === "CE") {
+    setInputDown(inputDown.slice(0, -1));
+    return;
+  }
+
+  if (valor === "=") {
+    if (inputDown === "") return;
+    try {
+      
+      const resultado = eval(inputDown);
+      setInputUp(inputDown + " =");
+      setInputDown(resultado.toString());
+    } catch {
+      setInputDown("Error");
+    }
+    return;
+  }
+
+  
+  if (
+    operadores.includes(valor) &&                   // si es un operador nuevo
+    inputDown.length > 0 &&                         // si ya hay algo escrito
+    operadores.includes(inputDown.slice(-1))        // si el último también era operador
+  ) {
+    return;
+  }
+
+  setInputDown(prev => prev + valor);
+}
+
 
   return (
     <div className='portada'>

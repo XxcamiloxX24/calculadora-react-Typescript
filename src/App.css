@@ -21,7 +21,10 @@
 
   }
 }
-
+#InputUp{
+  font-size: 25px;
+  font-weight: bold;
+}
 .hijos{
   flex: 0.5;
       text-align: center; 
